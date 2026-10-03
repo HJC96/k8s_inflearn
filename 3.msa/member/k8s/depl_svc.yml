@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: member-container
-        image: 346903264902.dkr.ecr.ap-northeast-2.amazonaws.com/member-service:latest
+        image: 403819139454.dkr.ecr.ap-northeast-2.amazonaws.com/member-service:latest
         ports:
         - containerPort: 8080
         resources:
