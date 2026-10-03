@@ -1,5 +1,5 @@
 # 필요프로그램 설치
-FROM openjdk:17-jdk-alpine as stage1
+FROM eclipse-temurin:17-jdk-alpine AS stage1
 # 파일 복사
 WORKDIR /app
 COPY gradle gradle
@@ -12,7 +12,7 @@ RUN chmod +x gradlew
 RUN ./gradlew bootJar
 
 # 두번째 스테이지
-FROM openjdk:17-jdk-alpine 
+FROM eclipse-temurin:17-jdk-alpine 
 WORKDIR /app
 COPY --from=stage1 /app/build/libs/*.jar app.jar
 
