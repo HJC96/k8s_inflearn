@@ -1,0 +1,16 @@
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argo-jichan-com-tls
+  namespace: argocd
+spec:
+  secretName: argo-jichan-com-tls
+  duration: 2160h #90day
+  renewBefore: 360h #before 15day
+  issuerRef:
+    name: my-issuer
+    kind: ClusterIssuer
+  commonName: argo.omalssum.cloud
+  dnsNames:
+  - argo.omalssum.cloud

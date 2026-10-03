@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: order-backend-ingress
+  namespace: jichan
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: my-issuer
+    nginx.ingress.kubernetes.io/rewrite-target: /$1 #첫번쨰 prefix제거
+spec:
+  tls:
+  - hosts:
+    - "server.omalssum.cloud"
+    secretName: server-jichan-com-tls
+  rules:
+  - host: server.omalssum.cloud  # 설정하려는 도메인 이름. 제외시에 elb주소로도 접근할수 있는 모든 도메인 접근 가능.
+    http:
+      paths:
+      - path: /member-service/ #모든 url요청을 nginx-service로 라우팅
+        pathType: Prefix
+        backend:
+          service:
+            name: member-service
+            port:
+              number: 80
+      - path: /ordering-service/ #모든 url요청을 nginx-service로 라우팅
+        pathType: Prefix
+        backend:
+          service:
+            name: ordering-service
+            port:
+              number: 80
+      - path: /product-service/ #모든 url요청을 nginx-service로 라우팅
+        pathType: Prefix
+        backend:
+          service:
+            name: product-service
+            port:
+              number: 80

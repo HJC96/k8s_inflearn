@@ -1,0 +1,29 @@
+spring :
+  config:
+    activate:
+      on-profile: prod
+  redis:
+  # k8s의 redis 서비스명을 지정
+    host: redis-service
+    port: 6379
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # DB_HOST는 k8s의 Secret 내의 Key이름과 일치
+    url: jdbc:mysql://${DB_HOST}:3306/ordersystem?useSSL=false&allowPublicKeyRetrieval=true
+    username: admin
+    password: ${DB_PW}
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+    show_sql: true
+jwt:
+  expiration: 1000
+  # 실제 실무에서는 secretKey값도 secret화 시켜야 할것. 
+  secretKey: YmV5b25kYWNjZXNzdG9rZW5zZWNyZXRrZXliZXlvbmRhY2Nlc3N0b2tlbnNlY3JldGtleWJleW9uZGFjY2Vzc3Rva2Vuc2VjcmV0a2V5
+  expirationRt: 288000
+  secretKeyRt: YmV5b25kcmVmcmVzaHRva2Vuc2VjcmV0a2V5YmV5b25kcmVmcmVzaHRva2Vuc2VjcmV0a2V5YmV5b25kcmVmcmVzaHRva2Vuc2VjcmV0a2V5
+
+

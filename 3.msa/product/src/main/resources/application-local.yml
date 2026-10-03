@@ -1,0 +1,38 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  application:
+    name: product-service
+  redis:
+    host: localhost
+    port: 6379
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ordermsa?useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 1234
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+    show_sql: true
+  kafka:
+    kafka-server: localhost:9092
+    consumer:
+      #      groupid는 컨슈머 그룹을 식별하는 ID로서, 동일한 그룹ID를 가진 컨슈머들은 메시지를 분담해서 consume
+      #      만약 여러 컨슈머가 다른 group-id를 가지고 한 topic을 리슨하면 각기 메시지를 수신하여 메시지 전파 효과 발생
+      group-id: product-group
+      #      카프카내에 들어와있는 메시지중에 처음들어와있는 메시지부터 읽기시작(latest: 현시점이후로 들어오는 메시지만 read)
+      auto-offset-reset: earliest
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+server:
+#  0으로 세팅하면 spring이 임의 port를 할당
+  port: 0

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-server
+  namespace: argocd
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80          # 클라이언트가 접근할 포트
+    targetPort: 8080  # 실제 argocd-server Pod의 포트
+  selector:
+    app.kubernetes.io/name: argocd-server

@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  mydb:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=ordersystem
+    ports:
+      - "3306:3306"
+  myredis:
+    image: redis
+    ports:
+      - "6379:6379"
+  my-spring:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mydb
+      - myredis
+    restart: on-failure:10
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mydb:3306/ordersystem?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - SPRING_REDIS_HOST=myredis

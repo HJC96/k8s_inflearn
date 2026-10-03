@@ -1,0 +1,98 @@
+name: deploy order order-backend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout github
+        uses: actions/checkout@v2
+      
+      - name: install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: "v1.25.9"
+        id: install
+        
+      - name: configure aws
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_KEY }}
+          aws-secret-access-key:  ${{ secrets.AWS_SECRET }}
+          aws-region: ap-northeast-2
+
+      - name: update cluster infomation
+        run: aws eks update-kubeconfig --name my-cluster --region ap-northeast-2
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+
+      - name: gateway build and push docker image to ecr
+        env:
+          REGISTRY: 346903264902.dkr.ecr.ap-northeast-2.amazonaws.com
+          REPOSITORY: apigateway
+          IMAGE_TAG: latest
+        run: |
+          docker build \
+          -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
+          -f ./3.msa/apigateway/Dockerfile ./3.msa/apigateway
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+      - name: eks kubectl apply
+        run: |
+          kubectl apply -f ./3.msa/apigateway/k8s/depl_svc.yml
+          kubectl rollout restart deployment apigateway-depl -n jichan
+        
+      - name: member build and push docker image to ecr
+        env:
+          REGISTRY: 346903264902.dkr.ecr.ap-northeast-2.amazonaws.com
+          REPOSITORY: member-service
+          IMAGE_TAG: latest
+        run: |
+          docker build \
+          -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
+          -f ./3.msa/member/Dockerfile ./3.msa/member
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+      - name: eks kubectl apply
+        run: |
+          kubectl apply -f ./3.msa/member/k8s/depl_svc.yml
+          kubectl rollout restart deployment member-depl -n jichan
+
+      - name: order build and push docker image to ecr
+        env:
+          REGISTRY: 346903264902.dkr.ecr.ap-northeast-2.amazonaws.com
+          REPOSITORY: ordering-service
+          IMAGE_TAG: latest
+        run: |
+          docker build \
+          -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
+          -f ./3.msa/ordering/Dockerfile ./3.msa/ordering
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+  
+      - name: eks kubectl apply
+        run: |
+          kubectl apply -f ./3.msa/ordering/k8s/depl_svc.yml
+          kubectl rollout restart deployment ordering-depl -n jichan
+          
+      - name: product build and push docker image to ecr
+        env:
+          REGISTRY: 346903264902.dkr.ecr.ap-northeast-2.amazonaws.com
+          REPOSITORY: product-service
+          IMAGE_TAG: latest
+        run: |
+          docker build \
+          -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
+          -f ./3.msa/product/Dockerfile ./3.msa/product
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+  
+      - name: eks kubectl apply
+        run: |
+          kubectl apply -f ./3.msa/product/k8s/depl_svc.yml
+          kubectl rollout restart deployment product-depl -n jichan
