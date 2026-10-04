@@ -26,7 +26,7 @@ metadata:
   namespace: jichan
 spec:
 # cert-manager가 아래 secretName에서 지정한 이름으로 Secret을 생성
-  secretName: server-jichan-com-tlㅋ
+  secretName: server-jichan-com-tls
   duration: 2160h #90day
   renewBefore: 360h #before 15day
   issuerRef:

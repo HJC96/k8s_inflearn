@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/kimseonguk197/k8s_inflearn.git
+    repoURL: https://github.com/HJC96/k8s_inflearn.git
     targetRevision: main
     path: 2.ordersystem/k8s/k8s-ordersystem
   destination:
